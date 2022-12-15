@@ -8,7 +8,7 @@ COPY package.json /app/package.json
 RUN cd /app && npm i
 
 # copie du code (aprés l'étape d'installation pour optimiser l'utilisation du cache)
-COPY ../../Dockerfile/exercice_1 /app/
+COPY . /app/
 
 WORKDIR /app
 
