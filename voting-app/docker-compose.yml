@@ -9,6 +9,8 @@ services:
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "postgres"
       POSTGRES_DATABASE: "postgres"
+      POSTGRES_HOST: "db"
+      RABBITMQ_URI: "amqp://guest:guest@rabbitmq"
     volumes:
       - ./api:/app
       # Cela montera le répertoire node_modules sur la machine hôte.
@@ -16,6 +18,27 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - net
+
+  rabbitmq:
+    image: rabbitmq:3.8-management-alpine
+    environment:
+      RABBITMQ_DEFAULT_USER: "guest"
+      RABBITMQ_DEFAULT_PASS: "guest"
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    volumes:
+      - /var/voting-app/rabbitmq/data:/var/lib/rabbitmq/
+      - /var/voting-app/rabbitmq/log:/var/log/rabbitmq/
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 30s
+      retries: 3
     networks:
       - net
 
@@ -25,7 +48,7 @@ services:
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "postgres"
     volumes:
-      - ./db-data:/var/lib/postgresql/data
+      - /var/voting-app/postgresql/data:/var/lib/postgresql/data
     healthcheck:
       test: [ "CMD", "pg_isready", "-U", "postgres" ]
       interval: "5s"
@@ -34,8 +57,10 @@ services:
     networks:
       - net
 
-volumes:
-  db-data:
+#volumes:
+#  db-data:
+#  rabbitmq-data:
+#  rabbitmq-log:
 
 networks:
   net:
