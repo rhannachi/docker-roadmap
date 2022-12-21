@@ -1,3 +1,4 @@
+const amqplib =  require('amqplib/callback_api')
 const db = require("./infra");
 const Voting = db.voting;
 const Op = db.Sequelize.Op;
@@ -25,7 +26,7 @@ exports.create = async (req, res) => {
 // Find a single Vote with candidate
 exports.count = async(req, res) => {
     try {
-
+        sendValue("balaaa balaaa blaaaaaa !!!!")
         if (!req?.query?.candidate) {
             res.status(400).send({
                 error: "Condidate can not be empty"
@@ -46,3 +47,23 @@ exports.count = async(req, res) => {
     }
 };
 
+const QUEUE_NAME = process.env.RABBITMQ_QUEUE_NAME
+
+const sendValue = (value) => {
+    const RABBITMQ_URI = process.env.RABBITMQ_URI
+    amqplib.connect(RABBITMQ_URI, (err, connection) => {
+        if (err) process.exit();
+        connection.createChannel(async (error, channel) => {
+            if (error) {
+                console.error(error);
+                process.exit();
+            } else {
+                channel.assertQueue(QUEUE_NAME, {durable: false});
+                channel.sendToQueue(QUEUE_NAME, Buffer.from(value.toString()));
+                console.info();
+                console.info(`===> Send To Queue - ${QUEUE_NAME}`);
+                console.info();
+            }
+        });
+    });
+}

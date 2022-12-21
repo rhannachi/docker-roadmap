@@ -21,7 +21,7 @@ db.sequelize.sync()
 
 // simple route
 app.get("/", (req, res) => {
-    res.json({ message: "Welcome to API" });
+    res.json({ message: "From API Welcome !!!" });
 });
 
 routes(app);
