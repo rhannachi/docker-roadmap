@@ -19,9 +19,10 @@ amqplib.connect(RABBITMQ_URI, (err, connection) => {
         connection.createChannel((_err, channel) => {
             channel.assertQueue(QUEUE_NAME, { durable: false });
             channel.consume(QUEUE_NAME, message => {
+                const content = message?.content.toString()
                 console.info();
-                console.info(`===> Waiting for messages`);
-                console.info(`===> ${QUEUE_NAME} - ${message?.content.toString()}`);
+                console.info(`===> Receive a message From Api Project`);
+                console.info(`===> ${QUEUE_NAME} - ${content}`);
                 console.info();
             }, { noAck: true });
         });

@@ -1,20 +1,32 @@
 const amqplib =  require('amqplib/callback_api')
 const db = require("./infra");
 const Voting = db.voting;
-const Op = db.Sequelize.Op;
 
 // Create and Save a new Vote
 exports.create = async (req, res) => {
     try {
-        if (!req?.body?.candidate) {
+        const candidate = req?.body?.candidate
+
+        if (!candidate) {
             res.status(400).send({
                 error: "Condidate can not be empty"
             });
             return
         }
 
-        const data = await Voting.create({ candidate: req.body.candidate })
+        if (!['cat', 'dog'].includes(candidate)) {
+            res.status(400).send({
+                error: "The Condidate must be 'cat' or 'dog'"
+            });
+            return
+        }
+
+        const data = await Voting.create({ candidate })
         res.send(data)
+
+        //****//
+        sendToSocket(await countAll())
+        //****//
 
     } catch (err) {
         res.status(500).send({
@@ -26,19 +38,27 @@ exports.create = async (req, res) => {
 // Find a single Vote with candidate
 exports.count = async(req, res) => {
     try {
-        sendValue("balaaa balaaa blaaaaaa !!!!")
-        if (!req?.query?.candidate) {
+        const candidate = req?.query?.candidate
+
+        if (!candidate) {
             res.status(400).send({
                 error: "Condidate can not be empty"
             });
             return
         }
 
-        const data = await Voting.findAll({
-            where: { candidate: req.query.candidate }
+        if (!['cat', 'dog'].includes(candidate)) {
+            res.status(400).send({
+                error: "The Condidate must be 'cat' or 'dog'"
+            });
+            return
+        }
+
+        const count = await Voting.count({
+            where: { candidate }
         })
 
-        res.send({ count: data.length })
+        res.send({ count })
 
     } catch (err) {
         res.status(500).send({
@@ -47,9 +67,29 @@ exports.count = async(req, res) => {
     }
 };
 
-const QUEUE_NAME = process.env.RABBITMQ_QUEUE_NAME
+// find all candidate
+const countAll = async () => {
+    // TODO improvment = promise.all/
+    // TODO having count groupby ....
+    const catCount = await Voting.count({
+        where: { candidate: 'cat' }
+    })
+    const dogCount = await Voting.count({
+        where: { candidate: 'dog' }
+    })
 
-const sendValue = (value) => {
+    return [{
+        candidate: 'cat',
+        count: catCount
+    },{
+        candidate: 'dog',
+        count: dogCount
+    }]
+
+}
+
+const sendToSocket = (object) => {
+    const QUEUE_NAME = process.env.RABBITMQ_QUEUE_NAME
     const RABBITMQ_URI = process.env.RABBITMQ_URI
     amqplib.connect(RABBITMQ_URI, (err, connection) => {
         if (err) process.exit();
@@ -58,10 +98,10 @@ const sendValue = (value) => {
                 console.error(error);
                 process.exit();
             } else {
-                channel.assertQueue(QUEUE_NAME, {durable: false});
-                channel.sendToQueue(QUEUE_NAME, Buffer.from(value.toString()));
+                channel.assertQueue(QUEUE_NAME, { durable: false });
+                channel.sendToQueue(QUEUE_NAME, Buffer.from(JSON.stringify(object), 'utf8'));
                 console.info();
-                console.info(`===> Send To Queue - ${QUEUE_NAME}`);
+                console.info(`===> Send To Socket Project - ${QUEUE_NAME}`);
                 console.info();
             }
         });
