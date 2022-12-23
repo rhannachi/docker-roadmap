@@ -14,19 +14,11 @@ exports.create = async (req, res) => {
             return
         }
 
-        if (!['cat', 'dog'].includes(candidate)) {
-            res.status(400).send({
-                error: "The Condidate must be 'cat' or 'dog'"
-            });
-            return
-        }
-
         const data = await Voting.create({ candidate })
         res.send(data)
 
-        //****//
+        //** send object to socket project **//
         sendToSocket(await countAll())
-        //****//
 
     } catch (err) {
         res.status(500).send({
@@ -47,13 +39,6 @@ exports.count = async(req, res) => {
             return
         }
 
-        if (!['cat', 'dog'].includes(candidate)) {
-            res.status(400).send({
-                error: "The Condidate must be 'cat' or 'dog'"
-            });
-            return
-        }
-
         const count = await Voting.count({
             where: { candidate }
         })
@@ -69,23 +54,8 @@ exports.count = async(req, res) => {
 
 // find all candidate
 const countAll = async () => {
-    // TODO improvment = promise.all/
-    // TODO having count groupby ....
-    const catCount = await Voting.count({
-        where: { candidate: 'cat' }
-    })
-    const dogCount = await Voting.count({
-        where: { candidate: 'dog' }
-    })
-
-    return [{
-        candidate: 'cat',
-        count: catCount
-    },{
-        candidate: 'dog',
-        count: dogCount
-    }]
-
+    const [results]= await db.sequelize.query("SELECT candidate, COUNT(*) FROM votings GROUP BY candidate")
+    return results
 }
 
 const sendToSocket = (object) => {
