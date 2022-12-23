@@ -39,8 +39,9 @@ function App() {
 
   return (
       <div className="root">
-        <h2 className="color">{status}</h2>
-        {!candidates.length && <strong>waiting for server ....</strong>}
+        <h4 className="color">
+          {status}, {!candidates.length && <strong>waiting for server ....</strong>}
+        </h4>
         <div className="vote-flex">
           {candidates?.map((candidate, index) =>
               <div key={`vote-item-${index}`} className="vote-flex vote">

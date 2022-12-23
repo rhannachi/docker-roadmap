@@ -1,5 +1,21 @@
 services:
 
+  front-api:
+    build: ./front-api
+    command: ["npm", "run", "dev"]
+    ports:
+      - "3004:3000"
+    volumes:
+      - ./front-api:/app
+      # Cela montera le répertoire node_modules sur la machine hôte.
+      - /app/node_modules
+    depends_on:
+      api:
+        condition: service_started
+    networks:
+      - net-front
+
+
   front-socket:
     build: ./front-socket
     command: ["npm", "run", "dev"]
@@ -13,7 +29,7 @@ services:
       socket:
         condition: service_started
     networks:
-      - net
+      - net-front
 
 
   socket:
@@ -34,7 +50,8 @@ services:
       rabbitmq:
         condition: service_healthy
     networks:
-      - net
+      - net-front
+      - net-back
 
   api:
     build: ./api
@@ -49,6 +66,7 @@ services:
       POSTGRES_HOST: "db"
       RABBITMQ_URI: "amqp://guest:guest@rabbitmq"
       RABBITMQ_QUEUE_NAME: "queue-api-socket"
+      FRONT_ORIGIN: "http://localhost:3004"
     volumes:
       - ./api:/app
       # Cela montera le répertoire node_modules sur la machine hôte.
@@ -59,7 +77,8 @@ services:
       rabbitmq:
         condition: service_healthy
     networks:
-      - net
+      - net-front
+      - net-back
 
   rabbitmq:
     image: rabbitmq:3.8-management-alpine
@@ -78,7 +97,7 @@ services:
       timeout: 30s
       retries: 3
     networks:
-      - net
+      - net-back
 
   db:
     image: postgres:15-alpine
@@ -93,7 +112,8 @@ services:
     ports:
       - "5432:5432"
     networks:
-      - net
+      - net-back
 
 networks:
-  net:
+  net-front:
+  net-back:

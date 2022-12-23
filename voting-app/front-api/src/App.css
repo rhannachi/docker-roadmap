@@ -11,25 +11,18 @@
   justify-content: center;
 }
 
-.vote {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.btn {
+  cursor: pointer;
   padding: 10px;
   border: 1px solid cornflowerblue;
   border-radius: 5px;
   background-color: darkturquoise;
   margin: 10px;
-  flex-basis: 25%;
+  width: 250px;
 }
 
-.vote-candidate {
-  font-size: xxx-large;
-  text-transform: uppercase;
-  color: white;
+.btn:active {
+  transform: scale(0.98);
+  box-shadow: 3px 2px 22px 1px rgba(0, 0, 0, 0.24);
 }
 
-.vote-count {
-  font-size: x-large;
-  color: white;
-}

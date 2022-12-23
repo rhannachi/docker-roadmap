@@ -4,8 +4,9 @@ const app = express();
 const routes = require("./app/routes")
 const db = require("./app/infra");
 
-// TODO enbale cors front-vote
-//app.use(cors({ origin: "http://localhost:8081" }));
+const ORIGIN = process.env.FRONT_ORIGIN
+
+app.use(cors({ origin:ORIGIN }));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
