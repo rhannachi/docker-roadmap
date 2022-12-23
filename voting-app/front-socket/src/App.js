@@ -1,27 +1,31 @@
 import React, { useState, useEffect } from "react";
+import './App.css';
 import io from "socket.io-client";
 
 const SERVER_SOCKET_URL = process.env.REACT_APP_SERVER_SOCKET_URL
 const socket = io(SERVER_SOCKET_URL, { transports: ['websocket'] });
 
 function App() {
-  const [response, setResponse] = useState("");
+  const [status, setStatus] = useState("waiting from socket");
+  const [candidates, setCandidates] = useState([]);
 
   useEffect(() => {
 
-    socket.on("socket-message", data => {
-      console.info('Receive a message From socket', data)
-      setResponse(data);
-    });
-
     socket.on('connect', () => {
-      setResponse("client is connect");
+      setStatus(`client is connect`);
     });
     socket.on('connect_error', ()=>{
       setTimeout(() => socket.connect(),5000)
     })
     socket.on('disconnect', () => {
-      setResponse("client is disconnect");
+      setStatus("client is disconnect");
+    });
+
+    socket.on("socket-message", data => {
+      console.info('Receive a message From socket', data)
+      if (data) {
+        setCandidates(JSON.parse(data));
+      }
     });
 
     return () => {
@@ -34,10 +38,19 @@ function App() {
   }, []);
 
   return (
-      <p>
-        Receive a message From socket: <code> {response} </code>
-      </p>
-  );
+      <div className="root">
+        <h2 className="color">{status}</h2>
+        {!candidates.length && <strong>waiting for server ....</strong>}
+        <div className="vote-flex">
+          {candidates?.map((candidate, index) =>
+              <div key={`vote-item-${index}`} className="vote-flex vote">
+                <div className="vote-candidate">{candidate.candidate}</div>
+                <div className="vote-count">{candidate.count}</div>
+              </div>
+          )}
+        </div>
+      </div>
+  )
 }
 
 export default App;
