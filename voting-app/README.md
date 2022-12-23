@@ -15,5 +15,5 @@ $ docker-compose up --build
 ### Clean
 ```
 $ docker container rm $(docker container ps -aq)
-$ docker image rm -f voting-app_api
+$ docker image rm -f $(docker image ls | grep voting-app)
 ```

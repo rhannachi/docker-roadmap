@@ -3,15 +3,24 @@ const express = require("express");
 const http = require("http");
 const socketIo = require("socket.io");
 const router = express.Router();
+const app = express();
 
 const PORT = process.env.PORT;
+const FRONT_SOCKET_URL = process.env.FRONT_SOCKET_URL;
 const QUEUE_NAME = process.env.RABBITMQ_QUEUE_NAME
 const RABBITMQ_URI = process.env.RABBITMQ_URI
 
-const app = express();
+router.get("/", (req, res) => {
+    res.send({ response: "From socket Welcome !!!" }).status(200);
+});
+
 app.use(router);
 const server = http.createServer(app);
-const io = socketIo(server);
+const io = socketIo(server, {
+    cors: {
+        origin: `${FRONT_SOCKET_URL}`
+    }
+});
 
 amqplib.connect(RABBITMQ_URI, (err, connection) => {
     if (err) { process.exit(); }
@@ -21,41 +30,28 @@ amqplib.connect(RABBITMQ_URI, (err, connection) => {
             channel.consume(QUEUE_NAME, message => {
                 const content = message?.content.toString()
                 console.info();
-                console.info(`===> Receive a message From Api Project`);
+                console.info(`===> Receive a message From Api project`);
                 console.info(`===> ${QUEUE_NAME} - ${content}`);
+                console.info();
+                console.info(`===> Send message to front-socket project`);
+                // socket.emit("FromAPI", content);
+                io.to("send-message").emit('socket-message',content)
                 console.info();
             }, { noAck: true });
         });
     }
 });
 
-
-
-
-router.get("/", (req, res) => {
-    res.send({ response: "From socket Welcome !!!" }).status(200);
-});
-
-
-
-let interval;
-
 io.on("connection", (socket) => {
-    console.log("New client connected");
-    if (interval) {
-        clearInterval(interval);
-    }
-    interval = setInterval(() => getApiAndEmit(socket), 1000);
+    console.info();
+    console.info("New client connected from front-socket project : client ID", socket.id);
+    console.info();
+    // Join socket
+    socket.join("send-message")
+    // Disconnect socket
     socket.on("disconnect", () => {
-        console.log("Client disconnected");
-        clearInterval(interval);
+        console.info("Client disconnected");
     });
 });
 
-const getApiAndEmit = socket => {
-    const response = new Date();
-    // Emitting a new message. Will be consumed by the client
-    socket.emit("FromAPI", response);
-};
-
-server.listen(PORT, () => console.log(`Listening on port ${PORT}`));
+server.listen(PORT, () => console.info(`Listening on port ${PORT}`));

@@ -101,7 +101,7 @@ const sendToSocket = (object) => {
                 channel.assertQueue(QUEUE_NAME, { durable: false });
                 channel.sendToQueue(QUEUE_NAME, Buffer.from(JSON.stringify(object), 'utf8'));
                 console.info();
-                console.info(`===> Send To Socket Project - ${QUEUE_NAME}`);
+                console.info(`===> Send message to socket project - ${QUEUE_NAME}`);
                 console.info();
             }
         });

@@ -11,15 +11,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 db.sequelize.sync()
-    // .then(() => {
-    //     console.log("Synced db.");
-    // })
-    // .catch((err) => {
-    //     console.log("Failed to sync db: " + err.message);
-    // });
-    //
-
-// simple route
 app.get("/", (req, res) => {
     res.json({ message: "From API Welcome !!!" });
 });
