@@ -2,6 +2,7 @@
 Docker est un logiciel Open Source permettant de gérer des conteneurs. Contrairement à la virtualisation classique.
 
 ### Project
+nous allons illustrer l’utilisation de Docker Compose avec l'application Voting App (une application micro-services simple).
 - Voting APP [here](./voting-app)
 
 ### Les commandes de base: 

@@ -1,5 +1,13 @@
 
 ## Architecture
+
+- front-api: front-end permettant à un utilisateur de voter.
+- api: back-end réceptionnant les votes.
+- front-socket: front-end permettant de visualiser les résultats.
+- socket: back-end mettant à disposition les résultats
+- db: database dans laquelle sont stockés les votes
+- rabbitmq: broker de messagerie qui récupère les votes depuis api et transmet les résultats à la partie socket.
+
 ![architecture](./architecture.png)
 
 ```
