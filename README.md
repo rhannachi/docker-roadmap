@@ -15,3 +15,4 @@ nous allons illustrer l’utilisation de Docker Compose avec l'application Votin
 - multi stage build [here](./multi-stage-build)
 - save/load [here](./save-load)
 - volume [here](./volume)
+- swarm [here](./swarm)
