@@ -1,0 +1,11 @@
+services:
+  www:
+    build: .
+    image: www:health
+    ports:
+      - 8080:3000
+    healthcheck:
+      test: ["CMD", "curl -f http://localhost:8080 || exit 1"]
+      timeout: 30s
+      interval: 1m
+      retries: 3
