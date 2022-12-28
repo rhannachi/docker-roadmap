@@ -2,10 +2,11 @@ services:
   www:
     build: .
     image: www:health
+    command: ["npm", "run", "dev"]
     ports:
-      - 8080:3000
+      - 3000:80
     healthcheck:
-      test: ["CMD", "curl -f http://localhost:8080 || exit 1"]
+      test: ["CMD", "curl -f http://localhost:3000 || exit 1"]
       timeout: 30s
       interval: 1m
       retries: 3

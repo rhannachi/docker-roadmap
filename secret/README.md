@@ -1,5 +1,10 @@
-## Secret
+## Secret (Donnée sensible)
+Disponible dans le container à l'exécution '/run/secrets/'
 
+![secret](./secret.jpg)
+
+
+### Exemple:
 ```
 node1@:$ echo "my_password" | docker secret create password -
 ```

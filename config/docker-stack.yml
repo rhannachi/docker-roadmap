@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+
+  proxy:
+    image: nginx:1.14.0-alpine
+    configs:
+      - source: server_config
+        target: /etc/nginx/nginx.conf
+      - source: server_cert
+        target: /etc/ssl/certs/server.crt
+    secrets:
+      - source: server_key
+        target: /etc/ssl/certs/server.key
+    ports:
+      - 80:80
+      - 443:443
+    deploy:
+      restart_policy:
+        condition: on-failure
+
+  api:
+    image: rhannachi1991/www:health
+    ports:
+      - 8080:80
+    deploy:
+      restart_policy:
+        condition: on-failure
+
+configs:
+  server_config:
+    file: ./nginx.conf
+  server_cert:
+    file: ./server-cert.pem
+
+secrets:
+  server_key:
+    file: ./server-key.pem
