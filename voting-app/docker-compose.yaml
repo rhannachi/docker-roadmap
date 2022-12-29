@@ -1,8 +1,9 @@
 services:
 
   front-api:
-    build: ./front-api
-    command: ["npm", "run", "dev"]
+    build:
+      context: ./front-api
+      target: "dev"
     ports:
       - "3004:3000"
     volumes:
@@ -17,8 +18,9 @@ services:
 
 
   front-socket:
-    build: ./front-socket
-    command: ["npm", "run", "dev"]
+    build:
+      context: ./front-socket
+      target: "dev"
     ports:
       - "3003:3000"
     volumes:
@@ -33,8 +35,9 @@ services:
 
 
   socket:
-    build: ./socket
-    command: ["npm", "run", "dev"]
+    build:
+      context: ./socket
+      target: "dev"
     ports:
       - "3002:3000"
     environment:
@@ -54,8 +57,9 @@ services:
       - net-back
 
   api:
-    build: ./api
-    command: ["npm", "run", "dev"]
+    build:
+      context: ./api
+      target: "dev"
     ports:
       - "3001:3000"
     environment:
