@@ -1,35 +1,25 @@
+version: "3"
+
 services:
 
   front-api:
-    build:
-      context: ./front-api
-      target: "production"
+    image: rhannachi1991/voting-app_front-api:latest
     ports:
       - "3004:80"
-    depends_on:
-      api:
-        condition: service_started
     networks:
       - net-front
 
 
   front-socket:
-    build:
-      context: ./front-socket
-      target: "production"
+    image: rhannachi1991/voting-app_front-socket:latest
     ports:
       - "3003:80"
-    depends_on:
-      socket:
-        condition: service_started
     networks:
       - net-front
 
 
   socket:
-    build:
-      context: ./socket
-      target: "production"
+    image: rhannachi1991/voting-app_socket:latest
     ports:
       - "3002:3000"
     environment:
@@ -37,17 +27,13 @@ services:
       FRONT_SOCKET_URL: "http://localhost:3003"
       RABBITMQ_URI: "amqp://guest:guest@rabbitmq"
       RABBITMQ_QUEUE_NAME: "queue-api-socket"
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
     networks:
       - net-front
       - net-back
 
+
   api:
-    build:
-      context: ./api
-      target: "production"
+    image: rhannachi1991/voting-app_api:latest
     ports:
       - "3001:3000"
     environment:
@@ -59,14 +45,10 @@ services:
       RABBITMQ_URI: "amqp://guest:guest@rabbitmq"
       RABBITMQ_QUEUE_NAME: "queue-api-socket"
       FRONT_ORIGIN: "http://localhost:3004"
-    depends_on:
-      db:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_healthy
     networks:
       - net-front
       - net-back
+
 
   rabbitmq:
     image: rabbitmq:3.8-management-alpine
@@ -87,6 +69,7 @@ services:
     networks:
       - net-back
 
+
   db:
     image: postgres:15-alpine
     environment:
@@ -101,6 +84,20 @@ services:
       - "5432:5432"
     networks:
       - net-back
+
+
+  visualizer:
+    image: dockersamples/visualizer:latest
+    ports:
+      - 8080:8080
+    stop_grace_period: 1m30s
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    deploy:
+      placement:
+        constraints: [ node.role == manager ]
+
+# TODO worker
 
 networks:
   net-front:

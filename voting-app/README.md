@@ -46,9 +46,9 @@
 # mkdir -p /var/voting-app/rabbitmq/data
 ```
 
-### Lancer le projet
+### Lancer le projet (En mode Dev)
 ```
-$ docker-compose up --build
+$ docker-compose up --force-recreate --build
 ```
 
 [//]: # (### Clean)
@@ -57,3 +57,60 @@ $ docker-compose up --build
 [//]: # ($ docker image rm -f $&#40;docker image ls | grep voting-app&#41;)
 [//]: # (```)
 
+
+### Lancer le projet (En mode Production)
+
+Build project
+``` 
+$ docker-compose -f docker-compose-prod.yml build
+```
+
+Push DockerHub
+```
+$ docker-compose -f docker-compose-prod.yml push
+```
+
+Nous pouvons initialiser le swarm
+```
+$ docker swarm init --advertise-addr <IP_NETWORK_INTERFACE>
+```
+
+Ou récupérer le token pour les machines workers
+```
+$ docker swarm join-token worker
+```
+
+Si les machines sont déjà créées:
+```
+$ docker-machine start node1
+$ docker-machine start node2
+$ docker-machine start node3
+```
+
+Si non, créer 3 hôtes nommés node1, node2, node3
+```
+$ docker-machine create --driver virtualbox node1
+$ docker-machine create --driver virtualbox node2
+$ docker-machine create --driver virtualbox node3
+```
+
+Utilisez SSH pour vous connecter à vos machines
+```
+$ docker-machine ssh node1
+$ docker-machine ssh node2
+$ docker-machine ssh node3
+```
+
+Autoriser d'autres machines à se joindre au Swarm
+```
+node1@:$ docker swarm join --token <TOKEN_ID>
+node2@:$ docker swarm join --token <TOKEN_ID>
+node3@:$ docker swarm join --token <TOKEN_ID>
+```
+
+```
+$ docker stack deploy -c docker-stack.yml voting-app
+$ docker stack ls
+$ docker stack ps voting-app
+$ docker service ls
+```
