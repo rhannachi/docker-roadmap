@@ -59,8 +59,8 @@ services:
       - '5672:5672'
       - '15672:15672'
     volumes:
-      - /var/voting-app/rabbitmq/data:/var/lib/rabbitmq/
-      - /var/voting-app/rabbitmq/log:/var/log/rabbitmq/
+      - rabbitmq-data:/var/lib/rabbitmq/
+      - rabbitmq-log:/var/log/rabbitmq/
     healthcheck:
       test: rabbitmq-diagnostics -q ping
       interval: 30s
@@ -76,7 +76,7 @@ services:
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "postgres"
     volumes:
-      - /var/voting-app/postgresql/data:/var/lib/postgresql/data
+      - db-data:/var/lib/postgresql/data
     healthcheck:
       test: [ "CMD", "pg_isready", "-U", "postgres" ]
       interval: "5s"
@@ -97,7 +97,10 @@ services:
       placement:
         constraints: [ node.role == manager ]
 
-# TODO worker
+volumes:
+  db-data:
+  rabbitmq-data:
+  rabbitmq-log:
 
 networks:
   net-front:

@@ -10,6 +10,7 @@ RUN mkdir -p node_modules/.cache && chmod -R 777 node_modules/.cache
 CMD ["npm", "run", "dev"]
 
 FROM base as build
+RUN rm .env
 RUN npm ci && npm run build
 
 FROM nginx:1.14.0-alpine as production

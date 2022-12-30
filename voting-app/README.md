@@ -101,6 +101,11 @@ $ docker-machine ssh node2
 $ docker-machine ssh node3
 ```
 
+Installer nano dans Boot2Docker
+```
+$ tce-load -wi nano
+```
+
 Autoriser d'autres machines à se joindre au Swarm
 ```
 node1@:$ docker swarm join --token <TOKEN_ID>
