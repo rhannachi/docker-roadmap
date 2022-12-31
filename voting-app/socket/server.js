@@ -18,7 +18,11 @@ app.use(router);
 
 const server = http.createServer(app);
 const io = socketIo(server, {
-    transports: ['polling']
+    transports: ['polling'],
+    cors: {
+        origin: "*",
+        methods: ["GET", "POST"]
+    }
 });
 
 // const io = require('socket.io')(server, {
