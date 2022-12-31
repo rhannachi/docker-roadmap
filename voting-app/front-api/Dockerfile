@@ -13,7 +13,7 @@ FROM base as build
 RUN rm .env
 RUN npm ci && npm run build
 
-FROM nginx:1.14.0-alpine as production
+FROM nginx:1.22-alpine as production
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY --from=build /app/build/ /usr/share/nginx/html/
 EXPOSE 80

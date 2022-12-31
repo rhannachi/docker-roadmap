@@ -4,7 +4,7 @@ services:
     build:
       context: ./front-api
       target: "production"
-    image: rhannachi1991/voting-app_front-api:latest
+#    image: rhannachi1991/voting-app_front-api:latest
     ports:
       - "3004:80"
     depends_on:
@@ -18,7 +18,7 @@ services:
     build:
       context: ./front-socket
       target: "production"
-    image: rhannachi1991/voting-app_front-socket:latest
+#    image: rhannachi1991/voting-app_front-socket:latest
     ports:
       - "3003:80"
     depends_on:
@@ -32,7 +32,7 @@ services:
     build:
       context: ./socket
       target: "production"
-    image: rhannachi1991/voting-app_socket:latest
+#    image: rhannachi1991/voting-app_socket:latest
     ports:
       - "3002:3000"
     environment:
@@ -51,7 +51,7 @@ services:
     build:
       context: ./api
       target: "production"
-    image: rhannachi1991/voting-app_api:latest
+#    image: rhannachi1991/voting-app_api:latest
     ports:
       - "3001:3000"
     environment:
