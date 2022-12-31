@@ -15,12 +15,15 @@ router.get("/", (req, res) => {
 });
 
 app.use(router);
+
 const server = http.createServer(app);
 const io = socketIo(server, {
-    cors: {
-        origin: `${FRONT_SOCKET_URL}`
-    }
+    transports: ['polling']
 });
+
+// const io = require('socket.io')(server, {
+//     transports: ['polling']
+// });
 
 amqplib.connect(RABBITMQ_URI, (err, connection) => {
     if (err) { process.exit(); }
@@ -35,14 +38,14 @@ amqplib.connect(RABBITMQ_URI, (err, connection) => {
                 console.info();
                 console.info(`===> Send message to front-socket project`);
                 // socket.emit("FromAPI", content);
-                io.to("send-message").emit('socket-message',content)
+                io.sockets.to("send-message").emit('socket-message',content)
                 console.info();
             }, { noAck: true });
         });
     }
 });
 
-io.on("connection", (socket) => {
+io.sockets.on("connection", (socket) => {
     console.info();
     console.info("New client connected from front-socket project : client ID", socket.id);
     console.info();

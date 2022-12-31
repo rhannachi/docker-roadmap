@@ -4,7 +4,11 @@ import { io }  from "socket.io-client";
 
 const SERVER_SOCKET_URL = process.env?.REACT_APP_SERVER_SOCKET_URL ?? '/socket.io'
 
-const socket = io(SERVER_SOCKET_URL);
+// const socket = io(SERVER_SOCKET_URL);
+const socket = io('', {
+  path: SERVER_SOCKET_URL,
+});
+
 
 function App() {
   const [status, setStatus] = useState("waiting from socket");
