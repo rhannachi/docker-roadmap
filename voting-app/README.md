@@ -57,7 +57,7 @@ $ docker-compose up --force-recreate --build
 [//]: # (```)
 
 
-### Lancer le projet (En mode Production)
+### Swarm - Lancer le projet (En mode Production)
 
 Build project
 ``` 
@@ -118,3 +118,25 @@ node1@:$ docker stack ls
 node1@:$ docker stack ps voting-app
 node1@:$ docker service ls
 ```
+
+
+### Swarm - Lancer le projet (mode Production) avec Portainer
+
+```
+node1@:$ curl -L https://downloads.portainer.io/ce2-16/portainer-agent-stack.yml -o portainer-agent-stack.yml
+```
+
+Lancer Portainer dans le node1 (manager)
+```
+node1@:$ docker stack deploy -c portainer-agent-stack.yml portainer
+```
+
+On va aller dans Stack, on voit les Stacks qui sont déployées sur notre cluster.\
+On va pouvoir en déployer d'autres directement avec Ad Stack.
+
+Et ce qu'on va faire maintenant, c'est déployer la voting app.
+On va récupérer ici le fichier Docker Stack.\
+Et on va faire Deploy the Stack.
+
+![portainer](./portainer.png)
+
