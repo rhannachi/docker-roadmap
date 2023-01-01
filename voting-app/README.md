@@ -11,39 +11,38 @@
 ![architecture](./architecture.png)
 
 ```
+├── docker-compose-prod.yml
 ├── docker-compose.yml
+├── docker-stack.yml
 ├── api
-│   ├── API-voting.postman_collection.json
 │   ├── app
 │   ├── Dockerfile
 │   ├── package.json
 │   ├── package-lock.json
 │   └── server.js
 ├── front-api
+│   ├── build
 │   ├── Dockerfile
+│   ├── nginx.conf
 │   ├── package.json
 │   ├── package-lock.json
 │   ├── public
+│   ├── README.md
 │   └── src
 ├── front-socket
 │   ├── Dockerfile
+│   ├── nginx.conf
 │   ├── package.json
 │   ├── package-lock.json
 │   ├── public
+│   ├── README.md
 │   └── src
+├── README.md
 └── socket
     ├── Dockerfile
     ├── package.json
     ├── package-lock.json
     └── server.js
-
-```
-
-### Prérequis
-```
-# mkdir -p /var/voting-app/postgresql/data
-# mkdir -p /var/voting-app/rabbitmq/log
-# mkdir -p /var/voting-app/rabbitmq/data
 ```
 
 ### Lancer le projet (En mode Dev)
@@ -70,16 +69,6 @@ Push DockerHub
 $ docker-compose -f docker-compose-prod.yml push
 ```
 
-Nous pouvons initialiser le swarm
-```
-$ docker swarm init --advertise-addr <IP_NETWORK_INTERFACE>
-```
-
-Ou récupérer le token pour les machines workers
-```
-$ docker swarm join-token worker
-```
-
 Si les machines sont déjà créées:
 ```
 $ docker-machine start node1
@@ -101,21 +90,31 @@ $ docker-machine ssh node2
 $ docker-machine ssh node3
 ```
 
-Installer nano dans Boot2Docker
+Nous pouvons initialiser le swarm sur le node1
 ```
-$ tce-load -wi nano
+node1@:$ docker swarm init --advertise-addr <IP_NETWORK_INTERFACE>
+```
+
+Ou récupérer le token pour les machines workers
+```
+node1@:$ docker swarm join-token worker
+```
+
+Installer nano dans Boot2Docker (node1) et copier/coller le docker-stack.yml
+```
+node1@:$ tce-load -wi nano docker-stack.yml
 ```
 
 Autoriser d'autres machines à se joindre au Swarm
 ```
-node1@:$ docker swarm join --token <TOKEN_ID>
 node2@:$ docker swarm join --token <TOKEN_ID>
 node3@:$ docker swarm join --token <TOKEN_ID>
 ```
 
+Lancer le projet
 ```
-$ docker stack deploy -c docker-stack.yml voting-app
-$ docker stack ls
-$ docker stack ps voting-app
-$ docker service ls
+node1@:$ docker stack deploy -c docker-stack.yml voting-app
+node1@:$ docker stack ls
+node1@:$ docker stack ps voting-app
+node1@:$ docker service ls
 ```

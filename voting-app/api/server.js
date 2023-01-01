@@ -4,9 +4,7 @@ const app = express();
 const routes = require("./app/routes")
 const db = require("./app/infra");
 
-const ORIGIN = process.env.FRONT_ORIGIN
-
-app.use(cors({ origin:ORIGIN }));
+app.use(cors({ origin: '*' }));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

@@ -6,7 +6,6 @@ const router = express.Router();
 const app = express();
 
 const PORT = process.env.PORT;
-const FRONT_SOCKET_URL = process.env.FRONT_SOCKET_URL;
 const QUEUE_NAME = process.env.RABBITMQ_QUEUE_NAME
 const RABBITMQ_URI = process.env.RABBITMQ_URI
 
@@ -24,10 +23,6 @@ const io = socketIo(server, {
         methods: ["GET", "POST"]
     }
 });
-
-// const io = require('socket.io')(server, {
-//     transports: ['polling']
-// });
 
 amqplib.connect(RABBITMQ_URI, (err, connection) => {
     if (err) { process.exit(); }

@@ -42,7 +42,6 @@ services:
       - "3002:3000"
     environment:
       PORT: 3000
-      FRONT_SOCKET_URL: "http://localhost:3003"
       RABBITMQ_URI: "amqp://guest:guest@rabbitmq"
       RABBITMQ_QUEUE_NAME: "queue-api-socket"
     volumes:
@@ -70,7 +69,6 @@ services:
       POSTGRES_HOST: "db"
       RABBITMQ_URI: "amqp://guest:guest@rabbitmq"
       RABBITMQ_QUEUE_NAME: "queue-api-socket"
-      FRONT_ORIGIN: "http://localhost:3004"
     volumes:
       - ./api:/app
       # Cela montera le répertoire node_modules sur la machine hôte.
