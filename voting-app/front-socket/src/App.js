@@ -1,9 +1,15 @@
 import React, { useState, useEffect } from "react";
 import './App.css';
-import io from "socket.io-client";
+import { io }  from "socket.io-client";
 
-const SERVER_SOCKET_URL = process.env.REACT_APP_SERVER_SOCKET_URL
-const socket = io(SERVER_SOCKET_URL, { transports: ['websocket'] });
+const SERVER_SOCKET_URL = process.env?.REACT_APP_SERVER_SOCKET_URL ?? ''
+
+console.info('Env: SERVER_SOCKET_URL', SERVER_SOCKET_URL)
+
+const socket = io(SERVER_SOCKET_URL, {
+  path: `/socket.io`,
+});
+
 
 function App() {
   const [status, setStatus] = useState("waiting from socket");

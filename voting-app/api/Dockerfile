@@ -8,7 +8,7 @@ ENV NODE_ENV=development
 RUN npm ci
 CMD ["npm", "run", "dev"]
 
-#FROM base as production
-#ENV NODE_ENV=production
-#RUN npm ci --production
-#CMD ["npm", "start"]
+FROM base as production
+ENV NODE_ENV=production
+RUN npm ci --production
+CMD ["npm", "start"]

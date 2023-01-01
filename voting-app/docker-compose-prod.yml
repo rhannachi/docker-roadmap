@@ -3,13 +3,10 @@ services:
   front-api:
     build:
       context: ./front-api
-      target: "dev"
+      target: "production"
+    image: rhannachi1991/voting-app_front-api:latest
     ports:
-      - "3004:3000"
-    volumes:
-      - ./front-api:/app
-      # Cela montera le répertoire node_modules sur la machine hôte.
-      - /app/node_modules
+      - "3004:80"
     depends_on:
       api:
         condition: service_started
@@ -20,13 +17,10 @@ services:
   front-socket:
     build:
       context: ./front-socket
-      target: "dev"
+      target: "production"
+    image: rhannachi1991/voting-app_front-socket:latest
     ports:
-      - "3003:3000"
-    volumes:
-      - ./front-socket:/app
-      # Cela montera le répertoire node_modules sur la machine hôte.
-      - /app/node_modules
+      - "3003:80"
     depends_on:
       socket:
         condition: service_started
@@ -37,17 +31,14 @@ services:
   socket:
     build:
       context: ./socket
-      target: "dev"
+      target: "production"
+    image: rhannachi1991/voting-app_socket:latest
     ports:
       - "3002:3000"
     environment:
       PORT: 3000
       RABBITMQ_URI: "amqp://guest:guest@rabbitmq"
       RABBITMQ_QUEUE_NAME: "queue-api-socket"
-    volumes:
-      - ./socket:/app
-      # Cela montera le répertoire node_modules sur la machine hôte.
-      - /app/node_modules
     depends_on:
       rabbitmq:
         condition: service_healthy
@@ -58,7 +49,8 @@ services:
   api:
     build:
       context: ./api
-      target: "dev"
+      target: "production"
+    image: rhannachi1991/voting-app_api:latest
     ports:
       - "3001:3000"
     environment:
@@ -69,10 +61,6 @@ services:
       POSTGRES_HOST: "db"
       RABBITMQ_URI: "amqp://guest:guest@rabbitmq"
       RABBITMQ_QUEUE_NAME: "queue-api-socket"
-    volumes:
-      - ./api:/app
-      # Cela montera le répertoire node_modules sur la machine hôte.
-      - /app/node_modules
     depends_on:
       db:
         condition: service_healthy
@@ -91,8 +79,8 @@ services:
       - '5672:5672'
       - '15672:15672'
     volumes:
-      - "rabbitmq-data:/var/lib/rabbitmq/"
-      - "rabbitmq-log:/var/log/rabbitmq/"
+      - rabbitmq-data:/var/lib/rabbitmq/
+      - rabbitmq-log:/var/log/rabbitmq/
     healthcheck:
       test: rabbitmq-diagnostics -q ping
       interval: 30s
@@ -107,7 +95,7 @@ services:
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "postgres"
     volumes:
-      - "db-data:/var/lib/postgresql/data"
+      - db-data:/var/lib/postgresql/data
     healthcheck:
       test: [ "CMD", "pg_isready", "-U", "postgres" ]
       interval: "5s"

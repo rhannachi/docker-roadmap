@@ -1,6 +1,8 @@
 import './App.css';
 
-const SERVER_API_URL = process.env.REACT_APP_SERVER_API_URL
+const SERVER_API_URL = process.env?.REACT_APP_SERVER_API_URL ?? ''
+
+console.info('Env: SERVER_API_URL', SERVER_API_URL)
 
 function App() {
 

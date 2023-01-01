@@ -6,7 +6,6 @@ const router = express.Router();
 const app = express();
 
 const PORT = process.env.PORT;
-const FRONT_SOCKET_URL = process.env.FRONT_SOCKET_URL;
 const QUEUE_NAME = process.env.RABBITMQ_QUEUE_NAME
 const RABBITMQ_URI = process.env.RABBITMQ_URI
 
@@ -15,10 +14,13 @@ router.get("/", (req, res) => {
 });
 
 app.use(router);
+
 const server = http.createServer(app);
 const io = socketIo(server, {
+    transports: ['polling'],
     cors: {
-        origin: `${FRONT_SOCKET_URL}`
+        origin: "*",
+        methods: ["GET", "POST"]
     }
 });
 
@@ -35,14 +37,14 @@ amqplib.connect(RABBITMQ_URI, (err, connection) => {
                 console.info();
                 console.info(`===> Send message to front-socket project`);
                 // socket.emit("FromAPI", content);
-                io.to("send-message").emit('socket-message',content)
+                io.sockets.to("send-message").emit('socket-message',content)
                 console.info();
             }, { noAck: true });
         });
     }
 });
 
-io.on("connection", (socket) => {
+io.sockets.on("connection", (socket) => {
     console.info();
     console.info("New client connected from front-socket project : client ID", socket.id);
     console.info();

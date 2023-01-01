@@ -5,13 +5,15 @@ EXPOSE 3000
 
 FROM base as dev
 ENV NODE_ENV=development
-
 RUN npm ci
 RUN mkdir -p node_modules/.cache && chmod -R 777 node_modules/.cache
-
 CMD ["npm", "run", "dev"]
 
-#FROM base as production
-#ENV NODE_ENV=production
-#RUN npm ci --production
-#CMD ["npm", "start"]
+FROM base as build
+RUN rm .env
+RUN npm ci && npm run build
+
+FROM nginx:1.22-alpine as production
+COPY nginx.conf /etc/nginx/nginx.conf
+COPY --from=build /app/build/ /usr/share/nginx/html/
+EXPOSE 80

@@ -1,64 +1,38 @@
+version: "3"
+
 services:
 
   front-api:
-    build:
-      context: ./front-api
-      target: "dev"
+    image: rhannachi1991/voting-app_front-api:latest
     ports:
-      - "3004:3000"
-    volumes:
-      - ./front-api:/app
-      # Cela montera le répertoire node_modules sur la machine hôte.
-      - /app/node_modules
-    depends_on:
-      api:
-        condition: service_started
+      - "3004:80"
     networks:
       - net-front
 
 
   front-socket:
-    build:
-      context: ./front-socket
-      target: "dev"
+    image: rhannachi1991/voting-app_front-socket:latest
     ports:
-      - "3003:3000"
-    volumes:
-      - ./front-socket:/app
-      # Cela montera le répertoire node_modules sur la machine hôte.
-      - /app/node_modules
-    depends_on:
-      socket:
-        condition: service_started
+      - "3003:80"
     networks:
       - net-front
 
 
   socket:
-    build:
-      context: ./socket
-      target: "dev"
+    image: rhannachi1991/voting-app_socket:latest
     ports:
       - "3002:3000"
     environment:
       PORT: 3000
       RABBITMQ_URI: "amqp://guest:guest@rabbitmq"
       RABBITMQ_QUEUE_NAME: "queue-api-socket"
-    volumes:
-      - ./socket:/app
-      # Cela montera le répertoire node_modules sur la machine hôte.
-      - /app/node_modules
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
     networks:
       - net-front
       - net-back
 
+
   api:
-    build:
-      context: ./api
-      target: "dev"
+    image: rhannachi1991/voting-app_api:latest
     ports:
       - "3001:3000"
     environment:
@@ -69,18 +43,10 @@ services:
       POSTGRES_HOST: "db"
       RABBITMQ_URI: "amqp://guest:guest@rabbitmq"
       RABBITMQ_QUEUE_NAME: "queue-api-socket"
-    volumes:
-      - ./api:/app
-      # Cela montera le répertoire node_modules sur la machine hôte.
-      - /app/node_modules
-    depends_on:
-      db:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_healthy
     networks:
       - net-front
       - net-back
+
 
   rabbitmq:
     image: rabbitmq:3.8-management-alpine
@@ -91,8 +57,8 @@ services:
       - '5672:5672'
       - '15672:15672'
     volumes:
-      - "rabbitmq-data:/var/lib/rabbitmq/"
-      - "rabbitmq-log:/var/log/rabbitmq/"
+      - rabbitmq-data:/var/lib/rabbitmq/
+      - rabbitmq-log:/var/log/rabbitmq/
     healthcheck:
       test: rabbitmq-diagnostics -q ping
       interval: 30s
@@ -101,13 +67,14 @@ services:
     networks:
       - net-back
 
+
   db:
     image: postgres:15-alpine
     environment:
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "postgres"
     volumes:
-      - "db-data:/var/lib/postgresql/data"
+      - db-data:/var/lib/postgresql/data
     healthcheck:
       test: [ "CMD", "pg_isready", "-U", "postgres" ]
       interval: "5s"
@@ -115,6 +82,18 @@ services:
       - "5432:5432"
     networks:
       - net-back
+
+
+  visualizer:
+    image: dockersamples/visualizer:latest
+    ports:
+      - "8080:8080"
+    stop_grace_period: 1m30s
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    deploy:
+      placement:
+        constraints: [ node.role == manager ]
 
 volumes:
   db-data:
