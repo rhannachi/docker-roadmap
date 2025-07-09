@@ -2,35 +2,35 @@
 - -t: alloue un pseudo TTY
 - -i: STDIN ouvert
 ```
-$ docker container run -it ubuntu bash
+$ docker run -it ubuntu bash
 ```
 
 - -d: lancer en background
 ```
-$ docker container run -d ubuntu
+$ docker run -d ubuntu
 ```
 
 ### Publication d'un port
 le port 80 de l'instance Nginx tournant dans le container est publié surl le port 8080 de l'hôte
 ```
-$ docker container run -d -p 8080:80 nginx
+$ docker run -d -p 8080:80 nginx
 $ docker container ls
 ```
 
 ### Bint-mount 
 Montage du code applicatif depuis la machine locale
 ```
-$ docker container run -v $PWD/www:/usr/share/nginx/html -d -p 80:80 nginx
+$ docker run -v $PWD/www:/usr/share/nginx/html -d -p 80:80 nginx
 ```
 Prise en compte des changements
 ```
-$ docker container run --mount type=bind,src=$PWD/www,dst=/usr/share/nginx/html -d -p 80:80 nginx
+$ docker run --mount type=bind,src=$PWD/www,dst=/usr/share/nginx/html -d -p 80:80 nginx
 ```
 
 ### Portainer
 Gérer des environnements de conteneurs.
 ```
-$ docker container run -d -p 9000:9000 -v /var/run/docker.sock:/var/run/docker.sock portainer/portainer
+$ docker run -d -p 9000:9000 -v /var/run/docker.sock:/var/run/docker.sock portainer/portainer
 ```
 
 ### Limitation des ressources

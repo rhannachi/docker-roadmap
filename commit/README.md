@@ -1,6 +1,6 @@
 1 - Lancez une container basé sur une image alpine:3.8, en mode interactif, et en lui donnant le nom c1
 ```
-$ docker container run -ti --name c1 alpine:3.8
+$ docker run -ti --name c1 alpine:3.8
 ```
 2 - dans le container lancez la commande curl google.com
 ```
@@ -16,11 +16,14 @@ $ docker container run -ti --name c1 alpine:3.8
 4 - Quittez le container avec CTRL-P CTRL-Q (pour ne pas killer le processus de PID 1)\
 5 - Créez une image, nommée curly, à partir du container c1
 ```
-$ docker container commit c1 curly
+$ docker commit c1 curly
 ```
 6 - Lancez un shell dans un container basée sur l’image curly et vérifiez que curl est présent
 ```
-$ docker container run -ti curly
+$ docker run -ti curly
 # curl google.com
 ```
-
+ou
+``` 
+$ docker run c1 curl google.com
+```
